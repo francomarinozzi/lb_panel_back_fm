@@ -5,11 +5,14 @@ const PORT = process.env.PORT || 3000;
 const { connectDB } = require('./config/db');
 const router = require('./routes');
 
+const FRONT_URL = process.env.FRONT_URL
+
 // Agregamos la URL de ngrok a la whitelist
-const whitelist = [
-  'https://tu-proyecto.netlify.app', 
+const whitelist = [ 
   'http://localhost:5173', 
-  'https://luetta-protonemal-scarcely.ngrok-free.dev',
+  `${FRONT_URL}`,
+  `${FRONT_URL}/precios.html`,
+  `${FRONT_URL}/admin.html`,
   '*' // <--- Agregada
 ];
 
