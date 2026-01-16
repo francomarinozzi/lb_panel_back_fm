@@ -5,6 +5,7 @@ const isProduction = process.env.NODE_ENV === 'production';
 
 const sequelize = new Sequelize(process.env.DATABASE_URL, {
   dialect: 'postgres',
+  dialectModule: pg,
   logging: false, // Ponelo en true si querés ver las queries en consola
   dialectOptions: isProduction
     ? {
