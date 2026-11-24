@@ -7,13 +7,12 @@ const router = require('./routes');
 
 const FRONT_URL = process.env.FRONT_URL
 
-// Agregamos la URL de ngrok a la whitelist
 const whitelist = [ 
   'http://localhost:5173', 
   `${FRONT_URL}`,
   `${FRONT_URL}/precios.html`,
   `${FRONT_URL}/admin.html`,
-  '*' // <--- Agregada
+  '*' 
 ];
 
 app.use(express.json());
@@ -39,7 +38,7 @@ const startServer = async () => {
       console.log(`Server running on ${PORT}`);
     });
   } catch (error) {
-    console.error('💀 ERROR CRÍTICO: No se pudo conectar a la DB');
+    console.error('ERROR: No se pudo conectar a la DB');
     console.error(error);
     process.exit(1); 
   }
