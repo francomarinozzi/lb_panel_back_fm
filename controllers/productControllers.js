@@ -64,11 +64,16 @@ const getProductById = async(req,res) =>{
 
 const updateProduct = async(req,res) =>{
   const { id } = req.params;
-  const { nombre, unidad, precio } = req.body;
+  const { nombre, unidad, precio, sabores } = req.body;
+
+  // Los sabores solo se tocan si vienen en el pedido: así un cliente viejo
+  // que no los manda no los borra sin querer.
+  const cambios = { nombre, unidad, precio };
+  if (sabores !== undefined) cambios.sabores = sabores;
 
   try {
     const [updated] = await Product.update(
-      { nombre, unidad, precio }, 
+      cambios,
       { where: { id } }
     );
 

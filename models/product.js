@@ -19,6 +19,29 @@ const Producto = sequelize.define('Producto', {
       this.setDataValue('nombre', value);
     }
   },
+  sabores: {
+    // Gustos del producto (ej. Ravioles: Verdura, Ricota y nuez...). Comparten
+    // el precio del producto. Lista vacía = producto sin sabores.
+    type: DataTypes.ARRAY(DataTypes.STRING),
+    allowNull: false,
+    defaultValue: [],
+    set(value) {
+      const vistos = new Set();
+      const limpios = (Array.isArray(value) ? value : [])
+        .filter((s) => typeof s === 'string')
+        .map((s) => s.trim().replace(/\s+/g, ' '))
+        .filter(Boolean)
+        .map((s) => s.charAt(0).toLocaleUpperCase('es') + s.slice(1))
+        .filter((s) => {
+          // Sin repetidos, ignorando mayúsculas/minúsculas.
+          const clave = s.toLocaleLowerCase('es');
+          if (vistos.has(clave)) return false;
+          vistos.add(clave);
+          return true;
+        });
+      this.setDataValue('sabores', limpios);
+    }
+  },
   unidad: {
     type: DataTypes.STRING, // Ej: "kg", "litro", "unidad", "pack"
     allowNull: false,
