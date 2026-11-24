@@ -10,6 +10,14 @@ const Producto = sequelize.define('Producto', {
   nombre: {
     type: DataTypes.STRING, // Esto equivale a VARCHAR(255)
     allowNull: false,       // No permitimos productos sin nombre
+    set(value) {
+      // Auto-capitaliza: primera letra en mayúscula, el resto queda como vino.
+      if (typeof value === 'string') {
+        const limpio = value.trim();
+        value = limpio.charAt(0).toLocaleUpperCase('es') + limpio.slice(1);
+      }
+      this.setDataValue('nombre', value);
+    }
   },
   unidad: {
     type: DataTypes.STRING, // Ej: "kg", "litro", "unidad", "pack"
