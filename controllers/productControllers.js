@@ -1,9 +1,13 @@
 const Product = require("../models/product")
+const { sequelize } = require("../config/db")
 
 
 const getProducts = async (req,res) => {
     try {
-        const products = await Product.findAll({limit:100})
+        const products = await Product.findAll({
+            order: [['orden', 'ASC NULLS LAST'], ['nombre', 'ASC']],
+            limit: 100
+        })
         if(products.length == 0){return res.status(404).json({message:'No se encontraron productos'})}
         res.status(200).json(products)
     } catch (error) {
@@ -14,8 +18,10 @@ const getProducts = async (req,res) => {
 
 const createProduct = async(req,res)=>{
     const product = req.body
-    try { 
-        const newProduct = await Product.create(product)
+    try {
+        // Los productos nuevos entran al final de la lista.
+        const maxOrden = await Product.max('orden')
+        const newProduct = await Product.create({ ...product, orden: (maxOrden ?? -1) + 1 })
         return res.status(200).json({message:`Producto '${newProduct.nombre}' creado con éxito.`, product:newProduct.toJSON()})
     } catch (error) {
         return res.status(500).json({message:`Error al crear producto.${error.message}`})
@@ -88,7 +94,27 @@ const updateProduct = async(req,res) =>{
   }
 };
 
+// Recibe { ids: [3, 1, 7, ...] } con todos los productos en el orden deseado
+// y guarda la posición de cada uno.
+const reorderProducts = async (req, res) => {
+  const { ids } = req.body;
+  if (!Array.isArray(ids) || !ids.every((id) => Number.isInteger(Number(id)))) {
+    return res.status(400).json({ error: 'Se espera { ids: [...] } con los ids en orden.' });
+  }
+  try {
+    await sequelize.transaction(async (t) => {
+      for (const [index, id] of ids.entries()) {
+        await Product.update({ orden: index }, { where: { id }, transaction: t, silent: true });
+      }
+    });
+    res.status(200).json({ message: 'Orden guardado.' });
+  } catch (error) {
+    res.status(500).json({ error: `Error al guardar el orden: ${error.message}` });
+  }
+};
+
 module.exports = {
+    reorderProducts,
     getProducts,
     createProduct,
     editPrice,

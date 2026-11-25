@@ -10,5 +10,8 @@ router.patch('/price/:id', productControllers.editPrice)
 
 router.delete('/:id', productControllers.deleteProduct)
 
+// Va antes de '/:id' para que "order" no se tome como un id.
+router.put('/order', productControllers.reorderProducts)
+
 router.put('/:id', productControllers.updateProduct)
 module.exports = router

@@ -57,6 +57,12 @@ const Producto = sequelize.define('Producto', {
       const rawValue = this.getDataValue('precio');
       return rawValue ? parseFloat(rawValue) : null;
     }
+  },
+  orden: {
+    // Posición manual en la lista (0 = primero). Se acomoda desde el admin.
+    // Null = todavía sin ordenar: esos van al final, por nombre.
+    type: DataTypes.INTEGER,
+    allowNull: true,
   }
 }, {
   tableName: 'productos', // Para forzar que la tabla se llame 'productos' en la DB
